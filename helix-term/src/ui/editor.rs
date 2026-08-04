@@ -541,7 +541,8 @@ impl EditorView {
         let primary_idx = selection.primary_index();
 
         let cursorkind = cursor_shape_config.from_mode(mode);
-        let cursor_is_block = cursorkind == CursorKind::Block;
+        let cursor_is_block =
+            cursorkind == CursorKind::Block || cursorkind == CursorKind::TerminalBlock;
 
         let selection_scope = theme
             .find_highlight_exact("ui.selection")
