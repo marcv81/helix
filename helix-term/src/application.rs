@@ -1271,11 +1271,6 @@ impl Application {
     }
 
     fn restore_term(&mut self) -> std::io::Result<()> {
-        use helix_view::graphics::CursorKind;
-        self.terminal
-            .backend_mut()
-            .show_cursor(CursorKind::default())
-            .ok();
         self.terminal.restore()
     }
 
