@@ -600,6 +600,32 @@ impl Prompt {
             );
         }
     }
+
+    fn cursor_position(&self, area: Rect) -> Position {
+        let area = area
+            .clip_left(self.prompt.len() as u16)
+            .clip_right(if self.prompt.is_empty() { 2 } else { 0 });
+
+        let mut col = area.left() as usize + self.line[self.anchor..self.cursor].width();
+
+        // ensure the cursor does not go beyond elipses
+        if self.truncate_end
+            && self.line[self.anchor..self.cursor].width() >= self.line_area.width as usize
+        {
+            col -= 1;
+        }
+
+        if self.truncate_start && self.cursor == self.anchor {
+            col += self.line[self.cursor..]
+                .graphemes(true)
+                .next()
+                .map_or(0, |g| g.width());
+        }
+
+        let row = area.y as usize + area.height as usize - 1;
+
+        Position::new(row, col)
+    }
 }
 
 impl Component for Prompt {
@@ -770,30 +796,8 @@ impl Component for Prompt {
     }
 
     fn cursor(&self, area: Rect, editor: &Editor) -> (Option<Position>, CursorKind) {
-        let area = area
-            .clip_left(self.prompt.len() as u16)
-            .clip_right(if self.prompt.is_empty() { 2 } else { 0 });
-
-        let mut col = area.left() as usize + self.line[self.anchor..self.cursor].width();
-
-        // ensure the cursor does not go beyond elipses
-        if self.truncate_end
-            && self.line[self.anchor..self.cursor].width() >= self.line_area.width as usize
-        {
-            col -= 1;
-        }
-
-        if self.truncate_start && self.cursor == self.anchor {
-            col += self.line[self.cursor..]
-                .graphemes(true)
-                .next()
-                .map_or(0, |g| g.width());
-        }
-
-        let line = area.height as usize - 1;
-
         (
-            Some(Position::new(area.y as usize + line, col)),
+            Some(self.cursor_position(area)),
             editor.config().cursor_shape.from_mode(Mode::Insert),
         )
     }
