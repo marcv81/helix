@@ -1736,18 +1736,7 @@ impl Component for EditorView {
     }
 
     fn cursor(&self, _area: Rect, editor: &Editor) -> (Option<Position>, CursorKind) {
-        match editor.cursor() {
-            // all block cursors are drawn manually
-            (pos, CursorKind::Block) => {
-                if self.terminal_focused {
-                    (pos, CursorKind::Hidden)
-                } else {
-                    // use terminal cursor when terminal loses focus
-                    (pos, CursorKind::Underline)
-                }
-            }
-            cursor => cursor,
-        }
+        editor.cursor()
     }
 }
 

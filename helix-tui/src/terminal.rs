@@ -210,7 +210,7 @@ where
         }
 
         match cursor_kind {
-            CursorKind::Hidden => self.hide_cursor()?,
+            CursorKind::Hidden | CursorKind::Block => self.hide_cursor()?,
             kind => self.show_cursor(kind)?,
         }
 

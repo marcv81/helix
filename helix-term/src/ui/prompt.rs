@@ -599,6 +599,18 @@ impl Prompt {
                 |_| prompt_color,
             );
         }
+
+        // Draw the block cursor
+        let cursor_kind = cx.editor.config().cursor_shape.from_mode(Mode::Insert);
+        let cursor_is_block =
+            cursor_kind == CursorKind::Block || cursor_kind == CursorKind::TerminalBlock;
+        if cursor_is_block {
+            let pos = self.cursor_position(area);
+            if let Some(cell) = surface.get_mut(pos.col as u16, pos.row as u16) {
+                let cursor_style = cx.editor.theme.get("ui.cursor.primary");
+                cell.set_style(cursor_style);
+            }
+        }
     }
 
     fn cursor_position(&self, area: Rect) -> Position {
